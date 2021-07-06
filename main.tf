@@ -1,5 +1,6 @@
 locals {
-  
+  resource_name_prefix = "${var.environment}-${var.resource_tag_name}"
+  name ="${local.resource_name_prefix}-rds-proxy"
 
   asm_secret_arns  = compact([for auth in var.auth : lookup(auth, "secret_arn", "")])
   kms_key_arn      = join("", data.aws_kms_key._.*.arn)
@@ -67,15 +68,15 @@ data "aws_iam_policy_document" "_" {
 
 resource "aws_iam_policy" "_" {
   count  = var.proxy_enabled ? 1 : 0
-  name   = 
+  name   = "${local.name}-iam-policy"
   policy = join("", data.aws_iam_policy_document._.*.json)
 }
 
 resource "aws_iam_role" "_" {
   count              = var.proxy_enabled ? 1 : 0
-  name               = 
+  name               = "${local.name}-iam-role"
   assume_role_policy = join("", data.aws_iam_policy_document.assume_role.*.json)
-  tags               = module.role_label.tags
+  tags               = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "_" {
@@ -91,7 +92,7 @@ resource "aws_iam_role_policy_attachment" "_" {
 resource "aws_db_proxy" "_" {
   count              = var.proxy_enabled ? 1 : 0
 
-  name                   = 
+  name                   = local.name
   debug_logging          = var.debug_logging
   engine_family          = var.engine_family
   idle_client_timeout    = var.idle_client_timeout
@@ -111,7 +112,7 @@ resource "aws_db_proxy" "_" {
     }
   }
 
-  tags = module._.tags
+  tags = var.tags
 }
 
 resource "aws_db_proxy_default_target_group" "_" {

@@ -15,6 +15,9 @@
 module "rds_proxy" {
   source  = "github.com/eezze/terraform-aws-rds-proxy"
 
+  environment       = var.environment
+  resource_tag_name = var.resource_tag_name
+
   db_instance_identifier = module.rds_instance.instance_id
   auth                   = local.auth
   vpc_security_group_ids = [module.vpc.vpc_default_security_group_id]

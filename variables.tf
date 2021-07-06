@@ -1,6 +1,22 @@
+# -----------------------------------------------------------------------------
+# Variables: General
+# -----------------------------------------------------------------------------
+
+variable "environment" {
+  description = "AWS resource namespace/prefix"
+}
+
+variable "resource_tag_name" {
+  description = "Resource name for billing purposes"
+}
+
+# -----------------------------------------------------------------------------
+# Variables: AWS RDS DB Proxy
+# -----------------------------------------------------------------------------
+
 variable "proxy_enabled" {
-  type        = bool
-  default     = true
+  type    = bool
+  default = true
 }
 variable "debug_logging" {
   type        = bool
@@ -104,4 +120,9 @@ variable "kms_key_id" {
   type        = string
   default     = null
   description = "The ARN or Id of the AWS KMS customer master key (CMK) to encrypt the secret values in the versions stored in secrets. If you don't specify this value, then Secrets Manager defaults to using the AWS account's default CMK (the one named `aws/secretsmanager`)"
+}
+
+variable "tags" {
+  type    = map(string)
+  default = {}
 }
